@@ -51,3 +51,4 @@ properties specific to pointer events.
 ## Authors
 
 Matthieu Pizenberg: matthieu@pizenberg.com
+Thomas Forgione: thomas@tforgione.fr

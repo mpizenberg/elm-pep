@@ -5,20 +5,23 @@
 
 if (! ("PointerEvent" in window) ) {
 
-	addMouseToPointerListener( document, 'mousedown', 'pointerdown' )
-	addMouseToPointerListener( document, 'mousemove', 'pointermove' )
-	addMouseToPointerListener( document, 'mouseup', 'pointerup' )
+	// Create Pointer polyfill from mouse events only on non-touch device
+	if (! ("TouchEvent" in window) ) {
+		addMouseToPointerListener( document, 'mousedown', 'pointerdown' )
+		addMouseToPointerListener( document, 'mousemove', 'pointermove' )
+		addMouseToPointerListener( document, 'mouseup', 'pointerup' )
 
-	function addMouseToPointerListener( target, mouseType, pointerType ) {
-		target.addEventListener( mouseType, ( mouseEvent ) => {
-			const elmPepTarget = findElmPEP( mouseEvent.target )
-			if ( elmPepTarget !== null ) {
-				let pointerEvent = new MouseEvent( pointerType, mouseEvent )
-				pointerEvent.pointerId = 1
-				pointerEvent.isPrimary = true
-				elmPepTarget.dispatchEvent( pointerEvent )
-			}
-		})
+		function addMouseToPointerListener( target, mouseType, pointerType ) {
+			target.addEventListener( mouseType, ( mouseEvent ) => {
+				const elmPepTarget = findElmPEP( mouseEvent.target )
+				if ( elmPepTarget !== null ) {
+					let pointerEvent = new MouseEvent( pointerType, mouseEvent )
+					pointerEvent.pointerId = 1
+					pointerEvent.isPrimary = true
+					elmPepTarget.dispatchEvent( pointerEvent )
+				}
+			})
+		}
 	}
 
 	addTouchToPointerListener( document, 'touchstart', 'pointerdown' )

@@ -19,6 +19,9 @@ if (! ("PointerEvent" in window) ) {
 					pointerEvent.pointerId = 1
 					pointerEvent.isPrimary = true
 					elmPepTarget.dispatchEvent( pointerEvent )
+					if ( pointerEvent.defaultPrevented ) {
+						mouseEvent.preventDefault();
+					}
 				}
 			})
 		}

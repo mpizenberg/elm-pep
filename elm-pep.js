@@ -66,7 +66,18 @@ if (! ("PointerEvent" in window) ) {
 					}
 
 					pointerEvent.pointerId = 1 + touch.identifier
-					pointerEvent.isPrimary = (touch.identifier == 0)
+
+					// First touch is the primary pointer event.
+					if ( touchType === 'touchstart' && !elmPepTarget.hasPrimaryTouchId ) {
+						elmPepTarget.hasPrimaryTouchId = true
+						elmPepTarget.primaryTouchId = touch.identifier
+					}
+					pointerEvent.isPrimary = (touch.identifier === elmPepTarget.primaryTouchId)
+					if ( touchType === 'touchend' && pointerEvent.isPrimary ) {
+						elmPepTarget.hasPrimaryTouchId = false
+						elmPepTarget.primaryTouchId = null
+					}
+
 					elmPepTarget.dispatchEvent( pointerEvent )
 				}
 			}

@@ -56,6 +56,15 @@ if (! ("PointerEvent" in window) ) {
 					mouseEvent.offsetY = touch.clientY - rect.top
 
 					let pointerEvent = new MouseEvent( pointerType, mouseEvent )
+
+					// Safari/iOS doesn't have movement{X,Y} but elm-mouse-events expects it
+					if ( ! pointerEvent.movementX ) {
+						pointerEvent.movementX = 0
+					}
+					if ( ! pointerEvent.movementY ) {
+						pointerEvent.movementY = 0
+					}
+
 					pointerEvent.pointerId = 1 + touch.identifier
 					pointerEvent.isPrimary = (touch.identifier == 0)
 					elmPepTarget.dispatchEvent( pointerEvent )

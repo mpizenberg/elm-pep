@@ -22,65 +22,53 @@ if (!("PointerEvent" in window)) {
 
 function addMouseToPointerListener(target, mouseType, pointerType) {
   target.addEventListener(mouseType, mouseEvent => {
-    const elmPepTarget = findElmPEP(mouseEvent.target);
-    if (elmPepTarget !== null) {
-      let pointerEvent = new MouseEvent(pointerType, mouseEvent);
-      pointerEvent.pointerId = 1;
-      pointerEvent.isPrimary = true;
-      elmPepTarget.dispatchEvent(pointerEvent);
-      if (pointerEvent.defaultPrevented) {
-        mouseEvent.preventDefault();
-      }
+    let pointerEvent = new MouseEvent(pointerType, mouseEvent);
+    pointerEvent.pointerId = 1;
+    pointerEvent.isPrimary = true;
+    mouseEvent.target.dispatchEvent(pointerEvent);
+    if (pointerEvent.defaultPrevented) {
+      mouseEvent.preventDefault();
     }
   });
 }
 
 function addTouchToPointerListener(target, touchType, pointerType) {
   target.addEventListener(touchType, touchEvent => {
-    const elmPepTarget = findElmPEP(touchEvent.target);
-    if (elmPepTarget !== null) {
-      let mouseEvent = new CustomEvent("");
-      mouseEvent.ctrlKey = touchEvent.ctrlKey;
-      mouseEvent.shiftKey = touchEvent.shiftKey;
-      mouseEvent.altKey = touchEvent.altKey;
-      mouseEvent.metaKey = touchEvent.metaKey;
+    let mouseEvent = new CustomEvent("", { bubbles: true, cancelable: true });
+    mouseEvent.ctrlKey = touchEvent.ctrlKey;
+    mouseEvent.shiftKey = touchEvent.shiftKey;
+    mouseEvent.altKey = touchEvent.altKey;
+    mouseEvent.metaKey = touchEvent.metaKey;
 
-      const changedTouches = touchEvent.changedTouches;
-      const nbTouches = changedTouches.length;
-      for (let t = 0; t < nbTouches; t++) {
-        const touch = changedTouches.item(t);
-        mouseEvent.clientX = touch.clientX;
-        mouseEvent.clientY = touch.clientY;
-        mouseEvent.screenX = touch.screenX;
-        mouseEvent.screenY = touch.screenY;
-        mouseEvent.pageX = touch.pageX;
-        mouseEvent.pageY = touch.pageY;
-        const rect = touch.target.getBoundingClientRect();
-        mouseEvent.offsetX = touch.clientX - rect.left;
-        mouseEvent.offsetY = touch.clientY - rect.top;
+    const changedTouches = touchEvent.changedTouches;
+    const nbTouches = changedTouches.length;
+    for (let t = 0; t < nbTouches; t++) {
+      const touch = changedTouches.item(t);
+      mouseEvent.clientX = touch.clientX;
+      mouseEvent.clientY = touch.clientY;
+      mouseEvent.screenX = touch.screenX;
+      mouseEvent.screenY = touch.screenY;
+      mouseEvent.pageX = touch.pageX;
+      mouseEvent.pageY = touch.pageY;
+      const rect = touch.target.getBoundingClientRect();
+      mouseEvent.offsetX = touch.clientX - rect.left;
+      mouseEvent.offsetY = touch.clientY - rect.top;
 
-        let pointerEvent = new MouseEvent(pointerType, mouseEvent);
-        pointerEvent.pointerId = 1 + touch.identifier;
+      let pointerEvent = new MouseEvent(pointerType, mouseEvent);
+      pointerEvent.pointerId = 1 + touch.identifier;
 
-        // First touch is the primary pointer event.
-        if (touchType === "touchstart" && primaryTouchId === null) {
-          primaryTouchId = touch.identifier;
-        }
-
-        // If first touch ends, reset primary touch id.
-        pointerEvent.isPrimary = touch.identifier === primaryTouchId;
-        if (touchType === "touchend" && pointerEvent.isPrimary) {
-          primaryTouchId = null;
-        }
-
-        elmPepTarget.dispatchEvent(pointerEvent);
+      // First touch is the primary pointer event.
+      if (touchType === "touchstart" && primaryTouchId === null) {
+        primaryTouchId = touch.identifier;
       }
+      pointerEvent.isPrimary = touch.identifier === primaryTouchId;
+
+      // If first touch ends, reset primary touch id.
+      if (touchType === "touchend" && pointerEvent.isPrimary) {
+        primaryTouchId = null;
+      }
+
+      touchEvent.target.dispatchEvent(pointerEvent);
     }
   });
-}
-
-function findElmPEP(target) {
-  if (document === target) return null;
-  if (target.hasAttribute("elm-pep")) return target;
-  return findElmPEP(target.parentNode);
 }

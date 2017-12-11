@@ -48,7 +48,8 @@ properties specific to pointer events.
 [caniuse-pointer]: https://caniuse.com/#feat=pointer
 [jquery-pep]: https://github.com/jquery/PEP
 
-## Authors
+## Contributors
 
-* Matthieu Pizenberg: matthieu@pizenberg.fr
-* Thomas Forgione: thomas@tforgione.fr
+* Matthieu Pizenberg - @mpizenberg
+* Thomas Forgione - @tforgione
+* Robert Vollmert - @robx (iOS debugging)

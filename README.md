@@ -9,15 +9,12 @@ Minimalist [pointer events][pointer-events] polyfill.
 
 Contrary to the current standard polyfill for pointer
 events ([jquery/PEP][jquery-pep]), this polyfill provides
-the `offsetX` and `offsetY` properties and
+relative positions (`offsetX` and `offsetY` properties) and
 is compatible with elm JSON decoders (no cyclic attributes).
 
 ## Usage
 
-Import elm-pep.js in your web page and
-add an `elm-pep` attribute to the DOM element
-on which you have attached pointer events listeners.
-
+Import the `elm-pep.js` file in your web page.
 The implemented pointer events are:
 
 * pointerdown
@@ -26,8 +23,7 @@ The implemented pointer events are:
 
 If the `PointerEvent` API is not supported in the browser,
 this will attach mouse and touch events to the document.
-When triggered, we check if the target has the `elm-pep`
-attribute and in that case, transform the mouse or touch
+When triggered, it transforms the mouse or touch
 event into a pointer event and dispatch it.
 
 ## Caveats

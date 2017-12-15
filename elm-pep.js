@@ -7,7 +7,13 @@
 // identifier 0 to primary touch event.
 let primaryTouchId = null;
 
+// Variable to hold mouse pointer captures.
+let mouseCaptureTarget = null;
+
 if (!("PointerEvent" in window)) {
+  // Define {set,release}PointerCapture element methods
+  definePointerCapture();
+
   // Create Pointer polyfill from mouse events only on non-touch device
   if (!("TouchEvent" in window)) {
     addMouseToPointerListener(document, "mousedown", "pointerdown");
@@ -25,7 +31,13 @@ function addMouseToPointerListener(target, mouseType, pointerType) {
     let pointerEvent = new MouseEvent(pointerType, mouseEvent);
     pointerEvent.pointerId = 1;
     pointerEvent.isPrimary = true;
-    mouseEvent.target.dispatchEvent(pointerEvent);
+
+    let target = mouseEvent.target;
+    if (mouseCaptureTarget !== null) {
+      target = mouseCaptureTarget;
+    }
+
+    target.dispatchEvent(pointerEvent);
     if (pointerEvent.defaultPrevented) {
       mouseEvent.preventDefault();
     }
@@ -82,4 +94,23 @@ function addTouchToPointerListener(target, touchType, pointerType) {
       }
     }
   });
+}
+
+function definePointerCapture() {
+  if (window.Element && !Element.prototype.setPointerCapture) {
+    Object.defineProperties(Element.prototype, {
+      'setPointerCapture': {
+        value: function(pointerId) {
+          mouseCaptureTarget = this;
+        }
+      },
+      'releasePointerCapture': {
+        value: function(pointerId) {
+          if (mouseCaptureTarget === this) {
+            mouseCaptureTarget = null;
+          }
+        }
+      }
+    });
+  }
 }

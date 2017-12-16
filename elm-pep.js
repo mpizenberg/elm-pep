@@ -67,6 +67,9 @@ function addTouchToPointerListener(target, touchType, pointerType) {
       }
 
       touchEvent.target.dispatchEvent(pointerEvent);
+      if (pointerEvent.defaultPrevented) {
+        touchEvent.preventDefault();
+      }
     }
   });
 }

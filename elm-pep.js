@@ -34,27 +34,25 @@ function addMouseToPointerListener(target, mouseType, pointerType) {
 
 function addTouchToPointerListener(target, touchType, pointerType) {
   target.addEventListener(touchType, touchEvent => {
-    let mouseEvent = new CustomEvent("", { bubbles: true, cancelable: true });
-    mouseEvent.ctrlKey = touchEvent.ctrlKey;
-    mouseEvent.shiftKey = touchEvent.shiftKey;
-    mouseEvent.altKey = touchEvent.altKey;
-    mouseEvent.metaKey = touchEvent.metaKey;
-
     const changedTouches = touchEvent.changedTouches;
     const nbTouches = changedTouches.length;
     for (let t = 0; t < nbTouches; t++) {
-      const touch = changedTouches.item(t);
-      mouseEvent.clientX = touch.clientX;
-      mouseEvent.clientY = touch.clientY;
-      mouseEvent.screenX = touch.screenX;
-      mouseEvent.screenY = touch.screenY;
-      mouseEvent.pageX = touch.pageX;
-      mouseEvent.pageY = touch.pageY;
-      const rect = touch.target.getBoundingClientRect();
-      mouseEvent.offsetX = touch.clientX - rect.left;
-      mouseEvent.offsetY = touch.clientY - rect.top;
+      let pointerEvent = new CustomEvent(pointerType, { bubbles: true, cancelable: true });
+      pointerEvent.ctrlKey = touchEvent.ctrlKey;
+      pointerEvent.shiftKey = touchEvent.shiftKey;
+      pointerEvent.altKey = touchEvent.altKey;
+      pointerEvent.metaKey = touchEvent.metaKey;
 
-      let pointerEvent = new MouseEvent(pointerType, mouseEvent);
+      const touch = changedTouches.item(t);
+      pointerEvent.clientX = touch.clientX;
+      pointerEvent.clientY = touch.clientY;
+      pointerEvent.screenX = touch.screenX;
+      pointerEvent.screenY = touch.screenY;
+      pointerEvent.pageX = touch.pageX;
+      pointerEvent.pageY = touch.pageY;
+      const rect = touch.target.getBoundingClientRect();
+      pointerEvent.offsetX = touch.clientX - rect.left;
+      pointerEvent.offsetY = touch.clientY - rect.top;
       pointerEvent.pointerId = 1 + touch.identifier;
 
       // First touch is the primary pointer event.

@@ -55,6 +55,16 @@ function addTouchToPointerListener(target, touchType, pointerType) {
       pointerEvent.offsetY = touch.clientY - rect.top;
       pointerEvent.pointerId = 1 + touch.identifier;
 
+      // Default values for standard MouseEvent fields.
+      pointerEvent.button = 0;
+      pointerEvent.buttons = 1;
+      pointerEvent.movementX = 0;
+      pointerEvent.movementY = 0;
+      pointerEvent.region = null;
+      pointerEvent.relatedTarget = null;
+      pointerEvent.x = pointerEvent.clientX;
+      pointerEvent.y = pointerEvent.clientY;
+
       // First touch is the primary pointer event.
       if (touchType === "touchstart" && primaryTouchId === null) {
         primaryTouchId = touch.identifier;

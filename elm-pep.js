@@ -10,6 +10,9 @@ let primaryTouchId = null;
 // Variable to hold mouse pointer captures.
 let mouseCaptureTarget = null;
 
+// pointerId assigned to mouse-generated pointer events.
+const mousePointerId = 1;
+
 if (!("PointerEvent" in window)) {
   // Define {set,release}PointerCapture element methods
   definePointerCapture();
@@ -29,7 +32,7 @@ if (!("PointerEvent" in window)) {
 function addMouseToPointerListener(target, mouseType, pointerType) {
   target.addEventListener(mouseType, mouseEvent => {
     let pointerEvent = new MouseEvent(pointerType, mouseEvent);
-    pointerEvent.pointerId = 1;
+    pointerEvent.pointerId = mousePointerId;
     pointerEvent.isPrimary = true;
 
     let target = mouseEvent.target;
@@ -106,11 +109,17 @@ function definePointerCapture() {
     Object.defineProperties(Element.prototype, {
       'setPointerCapture': {
         value: function(pointerId) {
+          if (pointerId !== mousePointerId) {
+            return;
+          }
           mouseCaptureTarget = this;
         }
       },
       'releasePointerCapture': {
         value: function(pointerId) {
+          if (pointerId !== mousePointerId) {
+            return;
+          }
           if (mouseCaptureTarget === this) {
             mouseCaptureTarget = null;
           }

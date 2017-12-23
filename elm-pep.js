@@ -35,6 +35,11 @@ function addMouseToPointerListener(target, mouseType, pointerType) {
     let target = mouseEvent.target;
     if (mouseCaptureTarget !== null) {
       target = mouseCaptureTarget;
+
+      // Implicit pointer release on pointerup/pointercancel.
+      if (mouseType === "mouseup") {
+        mouseCaptureTarget = null;
+      }
     }
 
     target.dispatchEvent(pointerEvent);

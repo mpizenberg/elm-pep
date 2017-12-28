@@ -11,9 +11,11 @@ let primaryTouchId = null;
 let mouseCaptureTarget = null;
 
 if (!("PointerEvent" in window)) {
+  // Define {set,release}PointerCapture
+  definePointerCapture();
+
   // Create Pointer polyfill from mouse events only on non-touch device
   if (!("TouchEvent" in window)) {
-    definePointerCapture();
     addMouseToPointerListener(document, "mousedown", "pointerdown");
     addMouseToPointerListener(document, "mousemove", "pointermove");
     addMouseToPointerListener(document, "mouseup", "pointerup");

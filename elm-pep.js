@@ -27,7 +27,6 @@ if (!("PointerEvent" in window)) {
 
 // Function defining {set,release}PointerCapture from {set,releas}Capture
 function definePointerCapture() {
-  console.log("Redefining setPointerCapture");
   Element.prototype.setPointerCapture = Element.prototype.setCapture;
   Element.prototype.releasePointerCapture = Element.prototype.releaseCapture;
 }

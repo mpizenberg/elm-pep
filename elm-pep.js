@@ -10,36 +10,40 @@ let primaryTouchId = null;
 // Variable to hold mouse pointer captures.
 let mouseCaptureTarget = null;
 
-// pointerId assigned to mouse-generated pointer events.
-const mousePointerId = 1;
-
 if (!("PointerEvent" in window)) {
-  // Define {set,release}PointerCapture element methods
-  definePointerCapture();
-
   // Create Pointer polyfill from mouse events only on non-touch device
   if (!("TouchEvent" in window)) {
+    definePointerCapture();
     addMouseToPointerListener(document, "mousedown", "pointerdown");
     addMouseToPointerListener(document, "mousemove", "pointermove");
     addMouseToPointerListener(document, "mouseup", "pointerup");
   }
 
+  // Define Pointer polyfill from touch events
   addTouchToPointerListener(document, "touchstart", "pointerdown");
   addTouchToPointerListener(document, "touchmove", "pointermove");
   addTouchToPointerListener(document, "touchend", "pointerup");
 }
 
+// Function defining {set,release}PointerCapture from {set,releas}Capture
+function definePointerCapture() {
+  console.log("Redefining setPointerCapture");
+  Element.prototype.setPointerCapture = Element.prototype.setCapture;
+  Element.prototype.releasePointerCapture = Element.prototype.releaseCapture;
+}
+
+// Function converting a Mouse event to a Pointer event.
 function addMouseToPointerListener(target, mouseType, pointerType) {
   target.addEventListener(mouseType, mouseEvent => {
     let pointerEvent = new MouseEvent(pointerType, mouseEvent);
-    pointerEvent.pointerId = mousePointerId;
+    pointerEvent.pointerId = 1;
     pointerEvent.isPrimary = true;
 
+    // if already capturing mouse event, transfer target
+    // and don't forget implicit release on mouseup.
     let target = mouseEvent.target;
     if (mouseCaptureTarget !== null) {
       target = mouseCaptureTarget;
-
-      // Implicit pointer release on pointerup/pointercancel.
       if (mouseType === "mouseup") {
         mouseCaptureTarget = null;
       }
@@ -52,12 +56,16 @@ function addMouseToPointerListener(target, mouseType, pointerType) {
   });
 }
 
+// Function converting a Touch event to a Pointer event.
 function addTouchToPointerListener(target, touchType, pointerType) {
   target.addEventListener(touchType, touchEvent => {
     const changedTouches = touchEvent.changedTouches;
     const nbTouches = changedTouches.length;
     for (let t = 0; t < nbTouches; t++) {
-      let pointerEvent = new CustomEvent(pointerType, { bubbles: true, cancelable: true });
+      let pointerEvent = new CustomEvent(pointerType, {
+        bubbles: true,
+        cancelable: true
+      });
       pointerEvent.ctrlKey = touchEvent.ctrlKey;
       pointerEvent.shiftKey = touchEvent.shiftKey;
       pointerEvent.altKey = touchEvent.altKey;
@@ -102,29 +110,4 @@ function addTouchToPointerListener(target, touchType, pointerType) {
       }
     }
   });
-}
-
-function definePointerCapture() {
-  if (window.Element && !Element.prototype.setPointerCapture) {
-    Object.defineProperties(Element.prototype, {
-      'setPointerCapture': {
-        value: function(pointerId) {
-          if (pointerId !== mousePointerId) {
-            return;
-          }
-          mouseCaptureTarget = this;
-        }
-      },
-      'releasePointerCapture': {
-        value: function(pointerId) {
-          if (pointerId !== mousePointerId) {
-            return;
-          }
-          if (mouseCaptureTarget === this) {
-            mouseCaptureTarget = null;
-          }
-        }
-      }
-    });
-  }
 }

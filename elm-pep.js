@@ -39,6 +39,16 @@ function addMouseToPointerListener(target, mouseType, pointerType) {
     let pointerEvent = new MouseEvent(pointerType, mouseEvent);
     pointerEvent.pointerId = 1;
     pointerEvent.isPrimary = true;
+    pointerEvent.pointerType = "mouse";
+    pointerEvent.width = 1;
+    pointerEvent.height = 1;
+    pointerEvent.tiltX = 0;
+    pointerEvent.tiltY = 0;
+
+    // pressure is 0.5 if a button is holded
+    "buttons" in mouseEvent && mouseEvent.buttons !== 0
+      ? (pointerEvent.pressure = 0.5)
+      : (pointerEvent.pressure = 0);
 
     // if already capturing mouse event, transfer target
     // and don't forget implicit release on mouseup.
@@ -93,6 +103,14 @@ function addTouchToPointerListener(target, touchType, pointerType) {
       pointerEvent.relatedTarget = null;
       pointerEvent.x = pointerEvent.clientX;
       pointerEvent.y = pointerEvent.clientY;
+
+      // Pointer event details
+      pointerEvent.pointerType = "touch";
+      pointerEvent.width = 1;
+      pointerEvent.height = 1;
+      pointerEvent.tiltX = 0;
+      pointerEvent.tiltY = 0;
+      pointerEvent.pressure = 1;
 
       // First touch is the primary pointer event.
       if (touchType === "touchstart" && primaryTouchId === null) {
